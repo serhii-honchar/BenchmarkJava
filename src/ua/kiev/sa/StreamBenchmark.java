@@ -28,12 +28,10 @@ StreamBenchmark.streamIteratorWithOperation               1000000  avgt   20  18
 @BenchmarkMode(Mode.AverageTime)
 public class StreamBenchmark {
 
-
-
     @Param({"1000000"})
     private int streamSize;
 
-    private List<String> TEST_DATA;
+    private List<String> testData;
 
     public static void main(String[] args) throws RunnerException {
 
@@ -45,23 +43,22 @@ public class StreamBenchmark {
         new Runner(opt).run();
     }
 
-
     @Setup
     public void setup() {
-        TEST_DATA = createData();
+        testData = createData();
     }
 
 
     @Benchmark
     public void forIterator(Blackhole bh) {
-        for (String s : TEST_DATA) {
+        for (String s : testData) {
             bh.consume(s);
         }
     }
 
     @Benchmark
     public void forIteratorWithOperation(Blackhole bh) {
-        for (String s : TEST_DATA) {
+        for (String s : testData) {
             double d = Double.parseDouble(s.replace("Number", ""));
             if (d % 2 == 0) {
                 double result = Math.cos(d);
@@ -72,22 +69,21 @@ public class StreamBenchmark {
 
     @Benchmark
     public void streamIteratorWithOperation(Blackhole bh) {
-        TEST_DATA.stream()
+        testData.stream()
                 .map(x -> Double.parseDouble(x.replace("Number", "")))
                 .filter(x -> x % 2 == 0)
                 .map(Math::cos).forEach(bh::consume);
-
     }
 
     @Benchmark
     public void streamIterator(Blackhole bh) {
-        TEST_DATA.stream()
+        testData.stream()
                 .forEach(bh::consume);
     }
 
     @Benchmark
     public void parallelStreamIteratorWithOperation(Blackhole bh) {
-        TEST_DATA.parallelStream()
+        testData.parallelStream()
                 .map(x -> Double.parseDouble(x.replace("Number", "")))
                 .filter(x -> x % 2 == 0)
                 .map(Math::cos)
@@ -96,7 +92,7 @@ public class StreamBenchmark {
 
     @Benchmark
     public void parallelStreamIterator(Blackhole bh) {
-        TEST_DATA.parallelStream()
+        testData.parallelStream()
                 .forEach(bh::consume);
     }
 
